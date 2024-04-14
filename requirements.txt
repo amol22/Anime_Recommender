@@ -3,4 +3,5 @@ numpy
 scikit-learn
 scipy
 dill
+streamlit
 -e .

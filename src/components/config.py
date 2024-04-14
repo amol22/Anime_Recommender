@@ -10,6 +10,8 @@ class DataIngestionConfig:
 @dataclass
 class DataTransformationConfig:
     rating_df_pivot_path: str = os.path.join('artifacts','rating_df_pivot.csv')
+    filtered_anime_list_path: str = os.path.join('artifacts','filtered_anime_list.csv')
+    csr_data_path: str = os.path.join('artifacts','csr_data')
     
 @dataclass
 class ModelTrainerConfig:

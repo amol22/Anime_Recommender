@@ -5,16 +5,17 @@ import numpy as np
 from src.logger import logging
 from src.exception import CustomException
 from src.components.config import DataTransformationConfig
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix, save_npz
 
 class DataTransformation:
     def __init__(self):
         self.data_transformation_config = DataTransformationConfig()
         
-    def initiate_data_transformation(self,rating_df_path):
+    def initiate_data_transformation(self,anime_df_path,rating_df_path):
         logging.info("Data transformation initiated")
         try:
             rating_df = pd.read_csv(rating_df_path)
+            anime_df = pd.read_csv(anime_df_path)
             
             rating_df.drop_duplicates(subset=['anime_id','user_id'],inplace=True)
             rating_df_pivot = rating_df.pivot(index='anime_id',columns='user_id',values='rating')
@@ -32,10 +33,20 @@ class DataTransformation:
             rating_df_pivot = rating_df_pivot.loc[:,user_filter.index]
             
             csr_data = csr_matrix(rating_df_pivot.values)
-            rating_df_pivot.reset_index(inplace=True)
+            rating_df_pivot.reset_index(inplace=True
+                                        )
+            os.makedirs(os.path.dirname(self.data_transformation_config.csr_data_path), exist_ok  = True)
+            save_npz(self.data_transformation_config.csr_data_path,csr_data)
+            
+            id_list=rating_df_pivot['anime_id'].tolist()
+            ldf=anime_df[anime_df['anime_id'].isin(id_list)]
+            
             
             os.makedirs(os.path.dirname(self.data_transformation_config.rating_df_pivot_path), exist_ok  = True)
-            rating_df_pivot.to_csv(self.data_transformation_config.rating_df_pivot_path, index = False, header = True)
+            rating_df_pivot.to_parquet(self.data_transformation_config.rating_df_pivot_path,index=False)
+            
+            os.makedirs(os.path.dirname(self.data_transformation_config.filtered_anime_list_path), exist_ok  = True)
+            ldf['name'].to_csv(self.data_transformation_config.filtered_anime_list_path,index=False,header=True)
             
             logging.info("Data pivot filtered")
             

@@ -24,7 +24,7 @@ def get_requirements(file_path: str)->List[str]:
             
 
 setup(
-    name = "Anime_Recommendation_System",
+    name = "Anime_Recommender",
     version = "0.0.1",
     author = "Amol",
     author_email = "amol.shrivastava22@gmail.com",
